@@ -188,6 +188,7 @@
         progressBar.style.width = 100 * progress + "%";
       }).then(function(unityInstance) {
         unityGame = unityInstance;
+        window.unityInstance = unityInstance;
           loadingBar.style.display = "none";
           UnityLogo.style.display = "none";
 
@@ -196,6 +197,9 @@
       });
     };
     document.body.appendChild(script);
+
+
+    
     </script>
     <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore-compat.js"></script>
