@@ -193,6 +193,7 @@
     var loadingBar = document.querySelector("#unity-loading-bar");
     var progressBar = document.querySelector("#unity-progress-bar");
     var UnityLogo = document.querySelector("#unity-logo");
+    var bottomImage = document.querySelector("#bottom-image");
         
 
     var unityGame; // This can be used to access the application with .SendMessage() commands
@@ -206,6 +207,7 @@
         window.unityInstance = unityInstance;
           loadingBar.style.display = "none";
           UnityLogo.style.display = "none";
+          bottomImage.style.display = "none";
 
       }).catch(function(message) {
         alert(message);
