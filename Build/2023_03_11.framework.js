@@ -2769,7 +2769,7 @@ var ASM_CONSTS = {
                       context.drawImage(img, 0, 0, img.width, img.height);
                       var imageData = context.getImageData(0, 0, img.width, img.height);
                       var byteArray = new Uint8Array(imageData.data.buffer);
-                      unityGame.Module.SendMessage(ImageLoader, LoadImage, byteArray);
+                      unityGame.Module.SendMessage('ImageLoader', 'LoadImage', byteArray);
                   };
               };
               reader.readAsDataURL(file);
