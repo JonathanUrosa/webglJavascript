@@ -40,10 +40,20 @@ function createUnityInstance(canvas, config, onProgress) {
     errorHandler(message, filename, lineno);
   }
 
+  function fallbackToDefaultConfigWithWarning(config, key, defaultValue) {
+    var value = config[key];
+
+    if (typeof value === "undefined" || !value) {
+      console.warn("Config option \"" + key + "\" is missing or empty. Falling back to default value: \"" + defaultValue + "\". Consider updating your WebGL template to include the missing config option.");
+      config[key] = defaultValue;
+    }
+  }
+
   var Module = {
     canvas: canvas,
     webglContextAttributes: {
       preserveDrawingBuffer: false,
+      powerPreference: 2,
     },
     cacheControl: function (url) {
       return (url == Module.dataUrl || url.match(/\.bundle/)) ? "must-revalidate" : "no-store";
@@ -78,10 +88,8 @@ function createUnityInstance(canvas, config, onProgress) {
       }
     },
     locateFile: function (url) {
-      return (
-        url == "build.wasm" ? this.codeUrl :
-        url
-      );
+      if (url == "build.wasm") return this.codeUrl;
+      return url;
     },
     disabledCanvasEvents: [
       "contextmenu",
@@ -89,6 +97,11 @@ function createUnityInstance(canvas, config, onProgress) {
     ],
   };
 
+  // Add fallback values for companyName, productName and productVersion to ensure that the UnityCache is working. 
+  fallbackToDefaultConfigWithWarning(config, "companyName", "Unity");
+  fallbackToDefaultConfigWithWarning(config, "productName", "WebGL Player");
+  fallbackToDefaultConfigWithWarning(config, "productVersion", "1.0");
+  
   for (var parameter in config)
     Module[parameter] = config[parameter];
 
@@ -183,6 +196,15 @@ function createUnityInstance(canvas, config, onProgress) {
         Module.shouldQuit = true;
         Module.onQuit = resolve;
       });
+    },
+    GetMemoryInfo: function () {
+      var memInfoPtr = Module._getMemInfo();
+      return {
+        totalWASMHeapSize: Module.HEAPU32[memInfoPtr >> 2],
+        usedWASMHeapSize: Module.HEAPU32[(memInfoPtr >> 2) + 1],
+        totalJSHeapSize: Module.HEAPF64[(memInfoPtr >> 3) + 1],
+        usedJSHeapSize: Module.HEAPF64[(memInfoPtr >> 3) + 2]
+      };
     },
   };
 
@@ -397,7 +419,7 @@ Module.readBodyWithProgress = function() {
     }
   }
 
-  function readBodyWithProgress(response, onProgress) {
+  function readBodyWithProgress(response, onProgress, enableStreaming) {
     var reader = response.body ? response.body.getReader() : undefined;
     var lengthComputable = typeof response.headers.get('Content-Length') !== "undefined";
     var estimatedContentLength = estimateContentLength(response, lengthComputable);
@@ -415,14 +437,17 @@ Module.readBodyWithProgress = function() {
         // Browser does not support streaming reader API
         // Fallback to Respone.arrayBuffer()
         return response.arrayBuffer().then(function (buffer) {
+          var body = new Uint8Array(buffer);
           onProgress({
             type: "progress",
+            response: response,
             total: buffer.length,
             loaded: 0,
-            lengthComputable: lengthComputable
+            lengthComputable: lengthComputable,
+            chunk: enableStreaming ? body : null
           });
           
-          return new Uint8Array(buffer);
+          return body;
         });
       }
       
@@ -444,9 +469,11 @@ Module.readBodyWithProgress = function() {
         receivedLength += result.value.length;
         onProgress({
           type: "progress",
+          response: response,
           total: Math.max(estimatedContentLength, receivedLength),
           loaded: receivedLength,
-          lengthComputable: lengthComputable
+          lengthComputable: lengthComputable,
+          chunk: enableStreaming ? result.value : null
         });
 
         return readBody();
@@ -478,9 +505,11 @@ Module.readBodyWithProgress = function() {
     return readBody().then(function (parsedBody) {
       onProgress({
         type: "load",
+        response: response,
         total: parsedBody.length,
         loaded: parsedBody.length,
-        lengthComputable: lengthComputable
+        lengthComputable: lengthComputable,
+        chunk: null
       });
 
       response.parsedBody = parsedBody;
@@ -499,12 +528,13 @@ Module.fetchWithProgress = function () {
     }
 
     return fetch(resource, init).then(function (response) {
-      return Module.readBodyWithProgress(response, onProgress);
+      return Module.readBodyWithProgress(response, onProgress, init.enableStreamingDownload);
     });
   }
 
   return fetchWithProgress;
 }();
+
   /**
  * @interface RequestMetaData
  * An object with meta data for a request
@@ -1001,7 +1031,7 @@ Module.UnityCache = function () {
             log("'" + cache.metaData.url + "' successfully revalidated but not stored in the indexedDB cache due to the error: " + error);
           });
 
-          return readBodyWithProgress(cache.response, init.onProgress);
+          return readBodyWithProgress(cache.response, init.onProgress, init.enableStreamingDownload);
         } else if (response.status == 200) {
           // New response -> Store it and cache and return it
           cache.response = response;
@@ -1009,7 +1039,7 @@ Module.UnityCache = function () {
           cache.revalidated = true;
           var clonedResponse = response.clone();
 
-          return readBodyWithProgress(response, init.onProgress).then(function (response) {
+          return readBodyWithProgress(response, init.onProgress, init.enableStreamingDownload).then(function (response) {
             // Update cached request and meta data
             cache.metaData.size = response.parsedBody.length;
             Promise.all([
@@ -1028,7 +1058,7 @@ Module.UnityCache = function () {
           log("'" + url + "' request failed with status: " + response.status + " " + response.statusText);
         }
 
-        return readBodyWithProgress(response, init.onProgress);
+        return readBodyWithProgress(response, init.onProgress, init.enableStreamingDownload);
       });
     }
 
@@ -1055,7 +1085,7 @@ Module.UnityCache = function () {
           log("'" + cache.metaData.url + "' served from the indexedDB cache without revalidation");
         });
 
-        return readBodyWithProgress(response, init.onProgress);
+        return readBodyWithProgress(response, init.onProgress, init.enableStreamingDownload);
       } else if (isCrossOriginURL(url) && (response.headers.get("Last-Modified") || response.headers.get("ETag"))) {
         return fetch(url, { method: "HEAD" }).then(function (headResult) {
           cache.revalidated = ["Last-Modified", "ETag"].every(function (header) {
@@ -1066,7 +1096,7 @@ Module.UnityCache = function () {
               log("'" + cache.metaData.url  + "' successfully revalidated and served from the indexedDB cache");
             });
 
-            return readBodyWithProgress(cache.response, init.onProgress);
+            return readBodyWithProgress(cache.response, init.onProgress, init.enableStreamingDownload);
           } else {
             return fetchAndStoreInCache(resource, init);
           }
