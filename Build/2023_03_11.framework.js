@@ -2769,7 +2769,8 @@ var ASM_CONSTS = {
                       context.drawImage(img, 0, 0, img.width, img.height);
                       var imageData = context.getImageData(0, 0, img.width, img.height);
                       var byteArray = new Uint8Array(imageData.data.buffer);
-                      unityGame.Module.SendMessage('ImageLoader', 'LoadImage', byteArray);
+                      var base64String = btoa(String.fromCharCode.apply(null, byteArray));
+                      unityGame.Module.SendMessage('ImageLoader', 'LoadImage', base64String);
                   };
               };
               reader.readAsDataURL(file);
