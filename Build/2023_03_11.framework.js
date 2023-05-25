@@ -1976,13 +1976,13 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  6736372: function() {Module['emscripten_get_now_backup'] = performance.now;},  
- 6736427: function($0) {performance.now = function() { return $0; };},  
- 6736475: function($0) {performance.now = function() { return $0; };},  
- 6736523: function() {performance.now = Module['emscripten_get_now_backup'];},  
- 6736578: function() {return Module.webglContextAttributes.premultipliedAlpha;},  
- 6736639: function() {return Module.webglContextAttributes.preserveDrawingBuffer;},  
- 6736703: function() {return Module.webglContextAttributes.powerPreference;}
+  6736292: function() {Module['emscripten_get_now_backup'] = performance.now;},  
+ 6736347: function($0) {performance.now = function() { return $0; };},  
+ 6736395: function($0) {performance.now = function() { return $0; };},  
+ 6736443: function() {performance.now = Module['emscripten_get_now_backup'];},  
+ 6736498: function() {return Module.webglContextAttributes.premultipliedAlpha;},  
+ 6736559: function() {return Module.webglContextAttributes.preserveDrawingBuffer;},  
+ 6736623: function() {return Module.webglContextAttributes.powerPreference;}
 };
 
 
@@ -2748,32 +2748,6 @@ var ASM_CONSTS = {
       link.target = '_blank';
       link.click();
       document.body.removeChild(link);
-    }
-
-  function _FunctionImageLoader() {
-      var input = document.createElement('input');
-          input.type = 'file';
-          input.click();
-          input.onchange = function(event) {
-              var file = event.target.files[0];
-              var reader = new FileReader();
-              reader.onload = function(event) {
-                  var contents = event.target.result;
-                  var img = new Image();
-                  img.src = contents;
-                  img.onload = function() {
-                      var canvas = document.createElement('canvas');
-                      var context = canvas.getContext('2d');
-                      canvas.width = img.width;
-                      canvas.height = img.height;
-                      context.drawImage(img, 0, 0, img.width, img.height);
-                      var imageData = context.getImageData(0, 0, img.width, img.height);
-                      var byteArray = new Uint8Array(imageData.data.buffer);
-                      unityGame.Module.SendMessage('ImageLoader', 'LoadImage', JSON.stringify(byteArray));
-                  };
-              };
-              reader.readAsDataURL(file);
-          };
     }
 
   function _GetDocument(collectionPath, documentId, objectName, callback, fallback) {
@@ -18766,7 +18740,6 @@ var asmLibraryArg = {
   "DeleteJSON": _DeleteJSON,
   "DownloadFile": _DownloadFile,
   "DownloadImageFromURL": _DownloadImageFromURL,
-  "FunctionImageLoader": _FunctionImageLoader,
   "GetDocument": _GetDocument,
   "GetDocumentsInCollection": _GetDocumentsInCollection,
   "GetEvaluateExistEmail": _GetEvaluateExistEmail,
