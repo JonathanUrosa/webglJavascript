@@ -155,6 +155,18 @@
           }
        
     </style>
+    <script>
+        var appVersion = 'v1.0.0';
+        if (localStorage.getItem('appVersion') !== appVersion) {
+          localStorage.setItem('appVersion', appVersion);
+          caches.keys().then(function(cacheNames) {
+            cacheNames.forEach(function(cacheName) {
+              caches.delete(cacheName);
+            });
+          });
+          window.location.reload(true);
+        }
+      </script>
 </head>
 
 <body>
