@@ -104,8 +104,8 @@
         #instaVerse-logo{
             display: flex;
             width: 40%;
-            bottom: 100px;
             margin: auto;
+            margin-bottom: 10px;
         }
         
         #cache-error-panel{
