@@ -91,7 +91,7 @@
 
 <body>
     <canvas id="unity-canvas"></canvas>
-    <div class="container">
+    <div id="container"  class="container">
         <div  class="instaVerse-logo" id="instaVerse-logo"><img src="instaVerse-logo-01b.png"></div>    
             <div id="unity-loading-bar" class="unity-loading-bar">
             <div id="unity-progress-bar" class="unity-progress-bar">
@@ -137,6 +137,7 @@
         var canvas = document.querySelector("#unity-canvas");
         var loadingBar = document.querySelector("#unity-loading-bar");
         var progressBar = document.querySelector("#unity-progress-bar");
+        var container = document.querySelector("#container");
         // var UnityLogo = document.querySelector("#unity-logo");
 
         // var UnityLogo = document.querySelector("#ilumine-AI-tittle-logo");
@@ -162,6 +163,7 @@
                 UnityLogo.style.display = "none";
                 cacheErrorPanel.style.display = "none";
                 bottomImage.style.display = "none";
+                container.style.display = "none";
                 // Muestra el canvas de Unity
                 console.log("show");
                 document.getElementById("unity-canvas").style.display = "block"; 
