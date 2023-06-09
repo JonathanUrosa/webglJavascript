@@ -42,7 +42,7 @@
 
         // Cargar la textura
         var textureLoader = new THREE.TextureLoader();
-        var texture = textureLoader.load('https://blockade-platform-production.s3.amazonaws.com/images/imagine/stunning_beautiful_k_vr_equirectangular_panoramic_photo_space__2c9bf70e20d6d19b__4840294_2c9bf7.jpg?ver=1');
+        var texture = textureLoader.load('https://blockade-platform-production.s3.amazonaws.com/images/imagine/stunning_beautiful_k_vr_equirectangular_panoramic_photo_space__2c9bf70e20d6d19b__4840294_2c9bf7.jpg');
 
         // Crear la geometría de la esfera
         var geometry = new THREE.SphereGeometry(5, 32, 32);
@@ -148,7 +148,7 @@
         var cacheErrorPanel = document.querySelector("#cache-error-panel")
         var bottomImage = document.querySelector("#bottom-image");
 
-
+        canvas.style.display = "none"; 
 
         var unityGame; // This can be used to access the application with .SendMessage() commands
         var script = document.createElement("script");
@@ -171,7 +171,7 @@
                 footer__copyright.style.display = "none";
                 // Muestra el canvas de Unity
                 console.log("show");
-                document.getElementById("unity-canvas").style.display = "block"; 
+                canvas.style.display = "block"; 
             }).catch(function (message) {
                 alert(message);
             });
