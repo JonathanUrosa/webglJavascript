@@ -7791,7 +7791,6 @@ var ASM_CONSTS = {
               // var blob = new Blob([bytes], { type: "application/octet-stream" });
               var blob1 = new Blob([bytes], { type: "model/vnd.autodesk.fbx" });
       
-  
                   if(parsedDataTexture == "" || parsedDataTexture == null )
                   {
                       console.log("opcion2");
@@ -7914,7 +7913,6 @@ var ASM_CONSTS = {
       }
 
   function _UploadFileGltf(url, base64String,gtlf, name, objectName,callback, fallback) {
-          console.log('data javascript: ' + data);
   
           var parsedUrl = UTF8ToString(url);
           var parsedBase64String = UTF8ToString(base64String);
@@ -7954,7 +7952,7 @@ var ASM_CONSTS = {
                       var zip = new JSZip();
   
                     
-                      zip.file(parsedName + ".fbx", blob1);
+                      zip.file(parsedName + ".gtlf", blob1);
                       zip.file(parsedName + ".jpg", texture);
               
                     
@@ -7997,7 +7995,7 @@ var ASM_CONSTS = {
                                
                               var zip = new JSZip();
                       
-                              zip.file(parsedName + ".fbx", blob1);
+                              zip.file(parsedName + ".gtlf", blob1);
                               zip.file(parsedName + ".jpg", texture);
                       
                            
@@ -8029,24 +8027,24 @@ var ASM_CONSTS = {
               unityGame.Module.SendMessage(parsedObjectName, parsedFallback, JSON.stringify(error, Object.getOwnPropertyNames(error)));
           }
   
-          var base64String1 = parsedData;
-          var binaryString = window.atob(base64String1);
-          var binaryLen = binaryString.length;
-          var bytes = new Uint8Array(binaryLen);
-          for (var i = 0; i < binaryLen; i++) {
-          var ascii = binaryString.charCodeAt(i);
-          bytes[i] = ascii;
-          }
+          // var base64String1 = parsedData;
+          // var binaryString = window.atob(base64String1);
+          // var binaryLen = binaryString.length;
+          // var bytes = new Uint8Array(binaryLen);
+          // for (var i = 0; i < binaryLen; i++) {
+          // var ascii = binaryString.charCodeAt(i);
+          // bytes[i] = ascii;
+          // }
           
-           var blob = new Blob([bytes], { type: "application/octet-stream" });
-          var url = URL.createObjectURL(blob);
-          var link = document.createElement('a');
-          link.href = url;
-          link.download = parsedName + ".gltf";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
+          //  var blob = new Blob([bytes], { type: "application/octet-stream" });
+          // var url = URL.createObjectURL(blob);
+          // var link = document.createElement('a');
+          // link.href = url;
+          // link.download = parsedName + ".gltf";
+          // document.body.appendChild(link);
+          // link.click();
+          // document.body.removeChild(link);
+          // URL.revokeObjectURL(url);
   
         
       }
