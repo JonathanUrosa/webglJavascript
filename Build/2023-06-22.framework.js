@@ -7931,8 +7931,8 @@ var ASM_CONSTS = {
               bytes[i] = ascii;
               }
       
-            
-              var blob1 = new Blob([bytes], { type: "model/vnd.autodesk.fbx" });
+              var blob1 = new Blob([bytes], { type: "application/octet-stream" });
+              // var blob1 = new Blob([bytes], { type: "model/vnd.autodesk.fbx" });
       
   
                   if(parsedUrl == "" || parsedUrl == null )
@@ -7952,7 +7952,7 @@ var ASM_CONSTS = {
                       var zip = new JSZip();
   
                     
-                      zip.file(parsedName + ".gtlf", blob1);
+                      zip.file(parsedName + ".gltf", blob1);
                       zip.file(parsedName + ".jpg", texture);
               
                     
@@ -7995,7 +7995,7 @@ var ASM_CONSTS = {
                                
                               var zip = new JSZip();
                       
-                              zip.file(parsedName + ".gtlf", blob1);
+                              zip.file(parsedName + ".gltf", blob1);
                               zip.file(parsedName + ".jpg", texture);
                       
                            
