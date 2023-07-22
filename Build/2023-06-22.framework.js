@@ -7913,18 +7913,124 @@ var ASM_CONSTS = {
   
       }
 
-  function _UploadFileGltf(path, data,name, objectName, callback, fallback) {
-  
+  function _UploadFileGltf(url, base64String,gtlf, name, objectName,callback, fallback) {
           console.log('data javascript: ' + data);
   
-          var parsedData = UTF8ToString(data);
+          var parsedUrl = UTF8ToString(url);
+          var parsedBase64String = UTF8ToString(base64String);
+          var parsedGtlf = UTF8ToString(gtlf);
           var parsedName = UTF8ToString(name);
-          
-          console.log('parsedData javascript: ' + parsedData);
+          var parsedObjectName = UTF8ToString(objectName);
+          var parsedCallback = UTF8ToString(callback);
+          var parsedFallback = UTF8ToString(fallback);
           
   
-          var base64String = parsedData;
-          var binaryString = window.atob(base64String);
+          try {
+              var binaryLen = parsedGtlf.length;
+              var bytes = new Uint8Array(binaryLen);
+              for (var i = 0; i < binaryLen; i++) {
+              var ascii = parsedGtlf.charCodeAt(i);
+              bytes[i] = ascii;
+              }
+      
+            
+              var blob1 = new Blob([bytes], { type: "model/vnd.autodesk.fbx" });
+      
+  
+                  if(parsedUrl == "" || parsedUrl == null )
+                  {
+                      console.log("opcion2");
+                      var base64String1 = parsedBase64String;
+                      var binaryString = window.atob(base64String1);
+                      var binaryLen = binaryString.length;
+                      var bytes1 = new Uint8Array(binaryLen);
+                      for (var i = 0; i < binaryLen; i++) {
+                      var ascii = binaryString.charCodeAt(i);
+                      bytes1[i] = ascii;
+                      }
+                      var texture = new Blob([bytes1], { type: "image/jpeg" });
+  
+                    
+                      var zip = new JSZip();
+  
+                    
+                      zip.file(parsedName + ".fbx", blob1);
+                      zip.file(parsedName + ".jpg", texture);
+              
+                    
+                      zip.generateAsync({type:"blob"}).then(function(content) {
+                      
+  
+                          var url2 = window.URL.createObjectURL(content);
+              
+                        
+  
+                          var link = document.createElement('a');
+                          link.href = url2;
+                          link.download = parsedName + ".zip";
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          URL.revokeObjectURL(url2);
+                          unityGame.Module.SendMessage(parsedObjectName, parsedCallback,parsedName);
+                      }) 
+                      .catch(function(error) {
+                          console.error("Error al generar el archivo ZIP:", error);
+                          unityGame.Module.SendMessage(parsedObjectName, parsedFallback, JSON.stringify(error, Object.getOwnPropertyNames(error)));
+                     
+                      });;
+                  }
+                  else
+                  {
+  
+                      console.log("opcion1");
+                 
+  
+                      fetch(parsedUrl)
+                      .then(response => response.arrayBuffer())
+                      .then(buffer => {
+                     
+                          var bytes123 = new Uint8Array(buffer);
+                          
+                          var texture = new Blob([bytes123], { type: "image/jpeg" });
+  
+                               
+                              var zip = new JSZip();
+                      
+                              zip.file(parsedName + ".fbx", blob1);
+                              zip.file(parsedName + ".jpg", texture);
+                      
+                           
+                              zip.generateAsync({type:"blob"}).then(function(content) {
+                              
+  
+                                  var url2 = window.URL.createObjectURL(content);
+                      
+                                
+                                  var link = document.createElement('a');
+                                  link.href = url2;
+                                  link.download = parsedName + ".zip";
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                  URL.revokeObjectURL(url2);
+                                  unityGame.Module.SendMessage(parsedObjectName, parsedCallback,parsedName);
+                              }) 
+                              .catch(function(error) {
+                                  console.error("Error al generar el archivo ZIP:", error);
+                                  unityGame.Module.SendMessage(parsedObjectName, parsedFallback, JSON.stringify(error, Object.getOwnPropertyNames(error)));
+                             
+                              });;
+                      });
+                      
+                  }
+  
+          } catch (error) {
+              unityGame.Module.SendMessage(parsedObjectName, parsedFallback, JSON.stringify(error, Object.getOwnPropertyNames(error)));
+          }
+  
+          var base64String1 = parsedData;
+          var binaryString = window.atob(base64String1);
           var binaryLen = binaryString.length;
           var bytes = new Uint8Array(binaryLen);
           for (var i = 0; i < binaryLen; i++) {
@@ -7942,27 +8048,7 @@ var ASM_CONSTS = {
           document.body.removeChild(link);
           URL.revokeObjectURL(url);
   
-          // try {
-  
-          //     firebase.storage().ref(parsedPath).put(blob,metadata).then(function(snapshot) {
-  
-          //         try {
-          //             console.log('se subio el archivo de forma correcta');
-          //             firebase.storage().ref(parsedPath).getDownloadURL().then(function(url) {
-          //                 console.log('se obtuvo la url de forma correcta');
-          //                 unityGame.Module.SendMessage(parsedObjectName, parsedCallback,url);
-          //             });
-          
-          //         } catch (error) {
-          //             console.log('error al obtener la url');
-          //             unityGame.Module.SendMessage(parsedObjectName, parsedFallback, JSON.stringify(error, Object.getOwnPropertyNames(error)));
-          //         }
-          //     });
-  
-          // } catch (error) {
-          //     console.log('error al subir el archivo');
-          //     unityGame.Module.SendMessage(parsedObjectName, parsedFallback, JSON.stringify(error, Object.getOwnPropertyNames(error)));
-          // }
+        
       }
 
   function ___assert_fail(condition, filename, line, func) {
