@@ -7952,7 +7952,7 @@ var ASM_CONSTS = {
                       var zip = new JSZip();
   
                     
-                      zip.file(parsedName + ".glt", blob1);
+                      zip.file(parsedName + ".glb", blob1);
                       zip.file(parsedName + ".jpg", texture);
               
                     
@@ -7995,7 +7995,7 @@ var ASM_CONSTS = {
                                
                               var zip = new JSZip();
                       
-                              zip.file(parsedName + ".glt", blob1);
+                              zip.file(parsedName + ".glb", blob1);
                               zip.file(parsedName + ".jpg", texture);
                       
                            
